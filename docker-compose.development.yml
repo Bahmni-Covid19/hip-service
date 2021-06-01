@@ -1,5 +1,59 @@
 version: '3'
 services:
+  hiu-ui:
+    image: "hiu-ui:latest"
+    #    image: "projecteka/hiu-ui:eef062a"
+    container_name: hiu-ui
+    environment:
+      BACKEND_BASE_URL: http://hiu:8080
+    ports:
+      - "5000:5000"
+    hiu:
+      image: "projecteka/health-information-user:v1.3.2"
+      container_name: hiu
+      volumes:
+        - ./:/shared
+      environment:
+        HIU_ID: Bahmni
+        HIU_NAME: Bahmni
+        IDENTITY_JWK_URL: https://dev.ndhm.gov.in/auth/realms/consent-manager/protocol/openid-connect/certs
+        DATA_PUSH_URL: "http://hiu:8003/data/notification"
+        CONSENT_NOTIFICATION_URL: "http://localhost:8003/consent/notification"
+        CONSENT_MANAGEMENT_SUFFIX: '@sbx'
+        CONSENT_MANAGEMENT_URL: "https://dev.ndhm.gov.in/cm"
+        DEFAULT_PAGE_SIZE: 20
+        MAX_PAGE_SIZE: 100
+        LOCAL_STORAGE_PATH: /tmp/
+        HIU_CLIENT_ID: 
+        HIU_CLIENT_SECRET: 
+        POSTGRES_HOST: db
+        POSTGRES_PORT: 5432
+        CONSENT_MANAGER_DB_NAME: health_information_user
+        POSTGRES_USER: 
+        POSTGRES_PASSWORD: 
+        DB_CONNECTION_POOL_SIZE: 5
+        OFFSET_IN_DAYS: 2
+        USING_GATEWAY: 'true'
+        GATEWAY_BASE_URL: "https://dev.ndhm.gov.in/gateway/v0.5"
+        GATEWAY_REQUEST_TIMEOUT: 2000
+        GATEWAY_JWK_URL: "https://dev.ndhm.gov.in/gateway/v0.5/certs"
+        HFR_AFFINITY_DOMAINS: facilitysbx.ndhm.gov.in
+        RABBITMQ_HOST: rabbitmq
+        RABBITMQ_PORT: 5672
+        RABBITMQ_USERNAME: 
+        RABBITMQ_PASSWORD: 
+        MAX_IN_MEMORY_SIZE: 500MB
+        DATA_FLOW_CONSENT_REQUEST_WAIT_TIME: 1
+        DATA_FLOW_CONSENT_ARTEFACT_WAIT_TIME: 1
+        DATA_FLOW_PART_WAIT_TIME: 1440
+      ports:
+        - "9053:8003"
+
+    hiu-db-setup:
+      image: projecteka/hiu-db-initializer
+      container_name: hiu-db-setup
+      environment:
+        - 'JAVA_TOOL_OPTIONS=-Djdbc.url=jdbc:postgresql://db:5432/health_information_user -Djdbc.username=postgres -Djdbc.password=welcome'
   hip:
     image: "ganesan92/health-information-provider"
     ports:
