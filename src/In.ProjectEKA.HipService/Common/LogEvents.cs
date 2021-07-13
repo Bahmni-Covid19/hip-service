@@ -5,5 +5,6 @@ namespace In.ProjectEKA.HipService.Common
         public const int Discovery = 1000;
         public const int DataFlow = 1001;
         public const int UserAuth = 1002;
+        public const int AddContext = 1003;
     }
 }

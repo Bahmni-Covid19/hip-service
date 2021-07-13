@@ -8,6 +8,11 @@ namespace In.ProjectEKA.HipService.Common.Model
             Name = name;
         }
 
+        public HIPReference(string id)
+        {
+            Id = id;
+        }
+
         public string Id { get; }
         public string Name { get; }
     }

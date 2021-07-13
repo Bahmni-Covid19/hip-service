@@ -1,0 +1,67 @@
+function(config) {
+
+config.logger.info(config.request.body);
+config.logger.info(config.request.path + " is called");
+var reqBody = JSON.parse(config.request.body);
+var reqId = reqBody.requestId;
+var token = config.request.headers.Authorization;
+var body1 ={
+
+              "requestId": "5f7a535d-a3fd-416b-b069-c97d021fbacd",
+              "timestamp": "2021-07-08T10:04:59.988Z",
+              "acknowledgement": {
+                "status": "SUCCESS"
+              },
+              "resp": {
+                "requestId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+              }
+
+};
+var reqBodyOnNotifyContext = JSON.stringify(body1);
+var http = require('http');
+var options = {
+    method: 'POST',
+    port: '9052',
+    hostname: 'host.docker.internal',
+    path: '/v0.5/links/context/on-notify',
+    json: body1,
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token,
+        'content-length': reqBodyOnNotifyContext.length,
+        'X-HIP-ID': '10000005'
+    }
+},
+httpRequest = http.request(options, response => {
+    var body = JSON.parse(body1);
+    response.setEncoding('utf8');
+    response.on('data', chunk => {
+        body += chunk;
+    });
+    response.on('end', () => {
+        var stubResponse = {
+            statusCode: response.statusCode,
+            headers: response.headers,
+            body
+        };
+        config.logger.info('Successfully proxied: ' + JSON.stringify(stubResponse));
+    });
+});
+httpRequest.write(reqBodyOnNotifyContext);
+httpRequest.end();
+
+return {
+    statusCode: '202',
+    headers: {
+    'Content-Type': 'application/json'
+},
+// this is the redacted response that would come from the openid connect mock server, but we need to replace the host in the url,
+// so the response is copied here with the updated host and the only entry that is required
+body: JSON.stringify(
+{
+    "Request":'Accepted',
+    'code':'202'
+}
+)
+};
+}

@@ -2,13 +2,18 @@ namespace In.ProjectEKA.HipService.Link.Model
 {
     public class Patient
     {
-        public Patient(string id, string name,Gender gender,int yearOfBirth,Address address)
+        public Patient(string id, string name, Gender gender, int yearOfBirth, Address address)
         {
             Id = id;
             Name = name;
             Gender = gender;
             YearOfBirth = yearOfBirth;
             Address = address;
+        }
+
+        public Patient(string id)
+        {
+            Id = id;
         }
 
         public string Id { get; }
